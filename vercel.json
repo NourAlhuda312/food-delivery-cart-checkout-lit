@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm run build && npm run build:mfe",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/cart", "destination": "/index.html" },
+    { "source": "/checkout/delivery", "destination": "/index.html" },
+    { "source": "/checkout/payment", "destination": "/index.html" },
+    { "source": "/order-confirmation", "destination": "/index.html" }
+  ]
+}

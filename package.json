@@ -1,0 +1,24 @@
+{
+  "name": "yum-ta-dum-cart-checkout-lit",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "npm run typecheck && vite build",
+    "build:mfe": "npm run typecheck && vite build --config vite.config.mfe.ts && node scripts/copy-mfe-demo.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@material/web": "^2.5.0",
+    "lit": "^3.3.3"
+  },
+  "devDependencies": {
+    "typescript": "~5.6.3",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10"
+  }
+}
