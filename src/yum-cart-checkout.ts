@@ -11,6 +11,7 @@ import yumyEmptyCart from './assets/yumy-empty-cart.png';
 import yumyRestaurantConflict from './assets/yumy-restaurant-conflict.png';
 import yumyOrderConfirmed from './assets/yumy-order-confirmed.png';
 import yumyNoCompletedOrder from './assets/yumy-no-completed-order.png';
+import { ensureMaterialSymbolsFont } from './ensure-material-symbols';
 import type {
   CompletedOrder,
   DeliveryMethod,
@@ -170,8 +171,12 @@ export class YumCartCheckout extends LitElement {
     if (this.route !== '/checkout/payment') this.clearSensitiveCardState(true);
   };
 
+  
   connectedCallback(): void {
+    
     super.connectedCallback();
+    ensureMaterialSymbolsFont();
+    
     if (typeof window !== 'undefined') {
       window.addEventListener(EVENT_CART_ADD_ITEM, this.handleWindowCartAdd);
       window.addEventListener('popstate', this.handlePopState);
