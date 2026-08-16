@@ -1,593 +1,303 @@
-<div align="center">
+# 🍲 Yum Ta Dum — Cart & Checkout Microfrontend
 
-# 🍲 Yum Ta Dum — Cart & Checkout
-
-### Lit Microfrontend · Group 13 · Component-Based Software Engineering
+**Group 13 · Component-Based Software Engineering**
 
 **Good food. Good mood. Yum Ta Dum.**
 
-`<yum-cart-checkout>`
+This repository contains the **Cart & Checkout Microfrontend** for the Yum Ta Dum multi-vendor food delivery platform.
 
-![Lit](https://img.shields.io/badge/Lit-3.x-324FFF?logo=lit&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-MFE-646CFF?logo=vite&logoColor=white)
-![Material Web](https://img.shields.io/badge/Material-Web-2E7D32)
-![Vitest](https://img.shields.io/badge/Tests-Vitest-6E9F18?logo=vitest&logoColor=white)
-![Currency](https://img.shields.io/badge/Currency-ILS-F57C00)
+It is built as an independently deployable **Lit + Material Web** Web Component and integrated into the final Yum Ta Dum Shell through **Web Components + DOM Custom Events**.
 
-**Owner:** Nour Al-Huda  
-**Responsibility:** Cart & Checkout Microfrontend  
-**Architecture:** Frontend-only Microfrontends · Web Components + Custom Events
-
-</div>
+> This repository contains only the Cart & Checkout Microfrontend.  
+> It does not contain the Shell, Catalog, or Account & Orders source code.
 
 ---
 
-## ✨ What this repository owns
+## Live Links
 
-This repository contains one independently deployable Yum Ta Dum feature component: **Cart & Checkout**.
-
-It is responsible for:
-
-- cart state and quantity management
-- one-restaurant-per-cart enforcement
-- remove + Undo
-- local cart persistence
-- delivery address and delivery timing
-- Cash / Mock Card / Demo Wallet payment simulation
-- final order review
-- successful order handoff
-- order confirmation for the current session
-
-It intentionally does **not** implement the global header, Yum Ta Dum logo placement, navigation, footer, global notifications, Catalog, authentication, or persistent order history. Those belong to the Shell and the other Microfrontends.
-
-> The goal is not to build another SPA monolith. The goal is to provide one self-contained component with a stable public contract.
-
----
-
-## 🧩 Microfrontend architecture
-
-```mermaid
-flowchart LR
-    C[Catalog & Discovery\nReact + MUI] -- cart:add-item --> K[Cart & Checkout\nLit + Material Web]
-    K -- cart:updated --> S[Yum Ta Dum Shell]
-    K -- navigation:requested --> S
-    K -- order:completed --> A[Account & Orders\nVue + Vuetify]
-    S --> K
-```
-
-The production component is:
-
-```html
-<yum-cart-checkout></yum-cart-checkout>
-```
-
-The component uses Lit's normal **open Shadow DOM** and does not import another Microfrontend's private source or state.
-
----
-
-## 🛠 Tech stack
-
-| Area | Technology |
+| Resource | URL |
 |---|---|
-| Component framework | Lit |
-| Language | TypeScript |
-| UI primitives | `@material/web` |
-| Build tooling | Vite |
-| Tests | Vitest |
-| Integration | Web Components + DOM Custom Events |
+| Standalone Cart App | https://yum-ta-dum-cart.vercel.app/cart |
+| MFE Bundle | https://yum-ta-dum-cart.vercel.app/mfe/yum-cart-checkout.js |
+| GitHub Repository | https://github.com/NourAlhuda312/food-delivery-cart-checkout-lit |
+| Integrated Shell Demo | https://yum-ta-dum-shell.vercel.app/ |
+
+---
+
+## Microfrontend Identity
+
+| Field | Value |
+|---|---|
+| Project | Yum Ta Dum |
+| Feature Area | Cart & Checkout |
+| Owner | Nour Al-Huda |
+| Framework | Lit |
+| UI Library | Material Web |
+| Custom Element | `<yum-cart-checkout>` |
+| Architecture Role | Independent Cart & Checkout MFE |
 | Persistence | Browser `localStorage` |
-| Deployment target | Vercel static deployment |
-
-No backend, database, Firebase, Supabase, Redux, Zustand, real authentication provider, or real payment gateway is used.
+| Currency | ILS / ₪ |
 
 ---
 
-## 🚀 Run locally
+## Architecture Role
 
-```bash
-npm install
-npm run dev
-```
-
-Open the local URL printed by Vite, normally:
+The Cart & Checkout Microfrontend is responsible for the shopping cart, checkout flow, payment simulation, and order completion event.
 
 ```text
-http://localhost:5173/
+Catalog & Discovery
+        |
+        | cart:add-item
+        v
+Cart & Checkout
+        |
+        | cart:updated
+        v
+Yum Ta Dum Shell cart badge
+
+Cart & Checkout
+        |
+        | order:completed
+        v
+Account & Orders
 ```
 
-The standalone development host lets the component run without the real team Shell and includes development-only controls for simulating Catalog events.
-
-### Useful routes
-
-| Route | Purpose |
-|---|---|
-| `/cart` | Cart and order summary |
-| `/checkout/delivery` | Address + delivery timing |
-| `/checkout/payment` | Payment + final review |
-| `/order-confirmation` | Current-session confirmation |
-
-There is intentionally no `/checkout/shipping` and no separate review route.
+The Cart component is loaded by the Shell as a deployed JavaScript bundle. The Shell does not copy or import the internal source code of this repository.
 
 ---
 
-## 🧪 Integration demo
+## Shell Integration
 
-`mfe-demo.html` is the small integration harness used to prove that the production custom element can work independently of Catalog and the Shell.
-
-After creating both production outputs:
-
-```bash
-npm run build
-npm run build:mfe
-npm run preview
-```
-
-open:
-
-```text
-http://localhost:4173/mfe-demo.html
-```
-
-The demo should:
-
-1. load `/mfe/yum-cart-checkout.js`
-2. render `<yum-cart-checkout>`
-3. dispatch realistic `cart:add-item` events from controls outside the component
-4. demonstrate a same-restaurant add
-5. demonstrate a second-restaurant conflict
-6. prove that the Microfrontend reacts only through its public contract
-
-Also open this URL directly:
-
-```text
-http://localhost:4173/mfe/yum-cart-checkout.js
-```
-
-It must return **JavaScript**, not `index.html`.
-
----
-
-## 📦 Production MFE bundle
-
-Build the standalone application first, then the library bundle:
-
-```bash
-npm run build
-npm run build:mfe
-```
-
-Expected output:
-
-```text
-dist/
-├── index.html
-├── ...standalone assets...
-├── mfe-demo.html
-└── mfe/
-    ├── yum-cart-checkout.js
-    └── yum-cart-checkout.js.map
-```
-
-The stable public entry is:
-
-```text
-/mfe/yum-cart-checkout.js
-```
-
-The filename is intentionally predictable and unhashed so the future Shell can load it safely.
-
----
-
-## 🔌 Shell integration
+The Shell can load this Microfrontend using the public ES module bundle:
 
 ```html
 <script
   type="module"
-  src="https://YOUR-DEPLOYMENT.vercel.app/mfe/yum-cart-checkout.js">
+  src="https://yum-ta-dum-cart.vercel.app/mfe/yum-cart-checkout.js">
 </script>
 
 <yum-cart-checkout></yum-cart-checkout>
 ```
 
-The Shell should not copy this repository's `src/` directory. It should consume the deployed ES-module bundle and communicate through the documented events.
+The custom element name must remain:
 
-Full integration examples are in [`docs/integration.md`](docs/integration.md).
+```html
+<yum-cart-checkout></yum-cart-checkout>
+```
 
 ---
 
-## 📡 Public event contract
+## Main Features
 
-All public Custom Events use:
-
-```ts
-{
-  bubbles: true,
-  composed: true,
-}
-```
-
-### Consumed
-
-| Event | Direction | Purpose |
-|---|---|---|
-| `cart:add-item` | Catalog → Cart | Add a `MealItem` |
-
-### Produced
-
-| Event | Direction | Purpose |
-|---|---|---|
-| `cart:updated` | Cart → Shell | Synchronize cart badge/totals |
-| `order:completed` | Cart → Account & Orders | Hand off successful order |
-| `navigation:requested` | Cart → Shell | Request global navigation |
-
-### `cart:add-item`
-
-```ts
-window.dispatchEvent(new CustomEvent('cart:add-item', {
-  detail: {
-    item: {
-      id: 'meal-101',
-      restaurantId: 'rest-01',
-      restaurantName: 'Burger House',
-      name: 'Classic Cheeseburger',
-      description: 'Beef patty, cheddar, lettuce, tomato, pickles, and house sauce.',
-      price: 35,
-      image: 'https://example.com/burger.jpg',
-      category: 'Burgers',
-      quantity: 1,
-    },
-  },
-  bubbles: true,
-  composed: true,
-}));
-```
-
-### `cart:updated`
-
-```ts
-{
-  itemCount: 3,
-  subtotal: 94,
-  discount: 0,
-  deliveryFee: 10,
-  total: 104,
-  restaurantId: 'rest-01',
-  currency: 'ILS'
-}
-```
-
-`itemCount` is the **sum of quantities**, not the number of cart rows.
-
-### `navigation:requested`
-
-```ts
-{ route: '/checkout/delivery' }
-```
-
-### `order:completed`
-
-The payload is:
-
-```ts
-{
-  order: CompletedOrder
-}
-```
-
-Exact interfaces are documented in [`docs/contracts.md`](docs/contracts.md).
+- Add meals to cart from Catalog events
+- Update meal quantity
+- Remove cart items
+- Undo deleted item
+- Persist cart state in `localStorage`
+- Enforce one-restaurant-per-order rule
+- Handle restaurant conflict safely
+- Display cart item totals
+- Display order summary
+- Free-delivery progress indicator
+- Guest checkout flow
+- Delivery address form
+- ASAP or scheduled delivery option
+- Mock payment methods
+- Final order review
+- Simulated order processing
+- Order confirmation state
+- Dispatch completed order to Account & Orders
+- Responsive desktop and mobile layout
+- Accessible buttons, forms, and states
 
 ---
 
-## 🛒 Cart rules
+## Business Rules
 
-- Quantity range: **1–10**
-- Adding the same meal increments quantity up to 10
-- Maximum quantity message: **“You've reached the maximum quantity (10).”**
-- One restaurant per cart
-- A second restaurant opens **“One order, one kitchen”** confirmation
-- **Keep current cart** keeps everything unchanged
-- **Clear and add** replaces the cart only after confirmation
-- Remove is a distinct action
-- Undo restores the removed meal, quantity, and logical position
-- Undo snackbar remains visible for approximately 6 seconds
-
-### Delivery pricing
-
-| Subtotal | Delivery |
-|---|---:|
-| `< ₪100` | `₪10` |
-| `>= ₪100` | **Free** |
-
-Discount is `0`. Coupons and promo codes are outside version 1.
-
----
-
-## 🛵 Free Delivery Journey
-
-The cart does more than show a plain progress bar.
-
-A small delivery journey communicates progress toward the `₪100` threshold:
-
-- before threshold → **“₪X away from free delivery”**
-- threshold reached → **“Free delivery unlocked!”**
-
-Motion is subtle and respects `prefers-reduced-motion`.
-
----
-
-## 📍 Delivery
-
-Guest checkout requires:
-
-- Full Name
-- Phone
-- City
-- Street Address
-
-Optional fields:
-
-- Area
-- Building
-- Postal Code
-
-The public contract field is exactly:
-
-```ts
-streetAddress
-```
-
-Delivery methods:
-
-### ASAP
-
-UI estimate:
-
-```text
-25–35 minutes
-```
-
-Completed order:
-
-```ts
-estimatedDeliveryMinutes: 30
-```
-
-### Schedule for later
-
-- must be a valid future date/time
-- past time slots are not offered for today
-- completed order uses `estimatedDeliveryMinutes: null`
-
----
-
-## 💳 Payment sandbox
-
-All payment methods are **simulations**. No real charge is made.
-
-| Method | Behavior |
+| Rule | Description |
 |---|---|
-| Cash on Delivery | deterministic simulated success |
-| Mock Credit Card | validation + deterministic card result |
-| Yum Wallet — Demo | balance check against `₪75.00` |
-
-### Test cards
-
-✅ Success
-
-```text
-4242 4242 4242 4242
-```
-
-❌ Decline
-
-```text
-4000 0000 0000 0002
-```
-
-Card requirements:
-
-- Cardholder Name required
-- 16-digit card number
-- valid future `MM/YY`
-- 3-digit CVV
-
-No random payment behavior is used.
-
-A declined payment does **not** clear the cart.
+| One restaurant per order | The cart prevents mixing meals from different restaurants in one order. |
+| Conflict confirmation | If the user adds a meal from another restaurant, the cart asks before clearing the current cart. |
+| Quantity limits | Item quantities are controlled to prevent invalid cart states. |
+| Frontend-only checkout | No real backend, bank, or payment provider is contacted. |
+| Numeric money values | Event payloads use numeric values, not formatted strings. |
+| Currency | Prices are displayed using ILS / ₪. |
 
 ---
 
-## 🔐 Security boundaries
+## Custom Event Contracts
 
-Full card number and CVV exist only in transient component state.
+All shared events use:
 
-They are never written to:
-
-- `localStorage`
-- `sessionStorage`
-- URLs or query strings
-- console logs
-- `CompletedOrder`
-- public event payloads
-
-Only the payment method identifier is included in the completed order.
+```js
+{
+  bubbles: true,
+  composed: true
+}
+```
 
 ---
 
-## 💾 Persistence
+### Consumed Event: `cart:add-item`
 
-Cart storage key:
+Produced by:
+
+```text
+Catalog & Discovery
+```
+
+Consumed by:
+
+```text
+Cart & Checkout
+```
+
+Payload:
+
+```ts
+{
+  item: {
+    id: string;
+    restaurantId: string;
+    restaurantName: string;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+    category: string;
+    quantity: number;
+  }
+}
+```
+
+---
+
+### Produced Event: `cart:updated`
+
+Produced by:
+
+```text
+Cart & Checkout
+```
+
+Consumed by:
+
+```text
+Yum Ta Dum Shell
+```
+
+Purpose:
+
+```text
+Update the global cart badge and cart summary state.
+```
+
+Payload:
+
+```ts
+{
+  itemCount: number;
+  subtotal: number;
+  discount: number;
+  deliveryFee: number;
+  total: number;
+  restaurantId: string | null;
+  currency: 'ILS';
+}
+```
+
+---
+
+### Produced Event: `order:completed`
+
+Produced by:
+
+```text
+Cart & Checkout
+```
+
+Consumed by:
+
+```text
+Account & Orders
+Yum Ta Dum Shell
+```
+
+Purpose:
+
+```text
+Record the completed mock order and show global success feedback.
+```
+
+Payload:
+
+```ts
+{
+  order: CompletedOrder;
+}
+```
+
+---
+
+### Produced Event: `navigation:requested`
+
+Produced by:
+
+```text
+Cart & Checkout
+```
+
+Consumed by:
+
+```text
+Yum Ta Dum Shell
+```
+
+Purpose:
+
+```text
+Request route changes without forcing a full page reload.
+```
+
+Payload:
+
+```ts
+{
+  route: string;
+}
+```
+
+Example:
+
+```js
+this.dispatchEvent(
+  new CustomEvent('navigation:requested', {
+    detail: {
+      route: '/checkout/delivery'
+    },
+    bubbles: true,
+    composed: true
+  })
+);
+```
+
+---
+
+## localStorage
+
+The cart persists frontend state using:
 
 ```text
 yum-ta-dum-cart
 ```
 
-Only cart data is persisted.
-
-If storage is unavailable, malformed, or quota-limited, the component continues in memory and displays:
-
-> We couldn't save your cart just now — it's still safe in this session.
-
-This Microfrontend does **not** write:
-
-```text
-yum-ta-dum-orders
-```
-
-Order-history persistence belongs to Account & Orders.
+The storage is intentionally local to the browser because this project is a frontend-only university simulation.
 
 ---
 
-## ✅ Successful order handoff
+## Routes Owned by Cart & Checkout
 
-The success sequence is intentionally ordered:
-
-1. create a valid `CompletedOrder`
-2. dispatch `order:completed`
-3. clear the in-memory cart
-4. persist the empty cart
-5. dispatch an empty `cart:updated`
-6. clear transient card state
-7. request `/order-confirmation`
-
-This keeps Cart & Checkout independent from Account & Orders while preserving the shared contract.
-
----
-
-## ♿ Accessibility
-
-Accessibility is implemented in the UI, not only documented.
-
-Highlights include:
-
-- semantic headings
-- visible labels
-- native radio semantics
-- keyboard-operable controls
-- logical tab order
-- `aria-invalid` + `aria-describedby`
-- accessible Material dialog behavior
-- visible `:focus-visible` treatment
-- `aria-live` feedback
-- icon-only button labels
-- 44px mobile touch targets
-- selected states communicated by more than color
-- reduced-motion support
-
-The approved orange CTA token remains `#F57C00`, but normal CTA text uses `#1F1F1F` rather than inaccessible white text.
-
----
-
-## 📱 Responsive behavior
-
-| Range | Behavior |
-|---|---|
-| `<600px` | mobile · single column · 16px padding · sticky checkout bar |
-| `600–959px` | tablet · flexible/single-column checkout |
-| `>=960px` | desktop · centered layout · sticky ~360px order summary |
-
-The component avoids horizontal page scrolling on mobile.
-
----
-
-## 🍲 Yumy status illustrations
-
-Yumy is used contextually for friendly product states rather than as a duplicate global logo.
-
-Examples in this MFE include:
-
-- empty cart
-- restaurant conflict
-- successful order confirmation
-- no completed order in the current session
-
-The final Shell owns the global Yum Ta Dum logo and global application chrome.
-
----
-
-## 🎨 Branding and favicon
-
-The production Microfrontend does not control the browser tab or document `<head>` when it is embedded in the team Shell. The **Shell owns the final global favicon and brand placement**.
-
-For this repository's standalone/demo pages, a matching Yum Ta Dum favicon can still be used for an independent development/deployment experience. Recommended files:
-
-```text
-public/favicon.png            # 512×512 transparent PNG
-public/apple-touch-icon.png   # 180×180 PNG
-```
-
-Then reference them from the standalone HTML host:
-
-```html
-<link rel="icon" type="image/png" href="/favicon.png" />
-<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-```
-
-Use the same approved simplified Yumy brand icon that the team agrees to use in the Shell. Do not render the global Yum Ta Dum logo inside `<yum-cart-checkout>`.
-
----
-
-## 🧪 Tests
-
-Run once:
-
-```bash
-npm test
-```
-
-Watch mode:
-
-```bash
-npm run test:watch
-```
-
-Coverage focuses on behavior that matters to the public contract:
-
-- cart add/increment/cap/remove/Undo
-- one-restaurant rule
-- subtotal and delivery calculations
-- persistence and storage fallback
-- event payloads and event flags
-- delivery validation
-- scheduled future-time validation
-- deterministic card behavior
-- wallet balance behavior
-- duplicate-submit protection
-- CompletedOrder construction
-- successful event ordering
-- empty cart update after success
-- card/CVV persistence security
-
----
-
-## 🧰 Quality gate
-
-Before pushing or deploying, run:
-
-```bash
-npm install
-npm run typecheck
-npm test
-npm run build
-npm run build:mfe
-```
-
-If all commands pass, preview the production files:
-
-```bash
-npm run preview
-```
-
-Then manually verify `/mfe-demo.html` and `/mfe/yum-cart-checkout.js`.
-
----
-
-## 🌐 Vercel
-
-The project is prepared for static Vercel deployment.
-
-Direct application URLs must work:
+The Shell owns global routing, but this Microfrontend handles the cart/checkout screens for these routes:
 
 ```text
 /cart
@@ -596,104 +306,172 @@ Direct application URLs must work:
 /order-confirmation
 ```
 
-The MFE asset must remain a JavaScript response:
+---
 
-```text
-/mfe/yum-cart-checkout.js
+## Development Commands
+
+Install dependencies:
+
+```bash
+npm install
 ```
 
-### Deployment URLs
+Run locally:
 
-Standalone application:
+```bash
+npm run dev
+```
+
+Run tests:
+
+```bash
+npm test
+```
+
+Type check:
+
+```bash
+npm run typecheck
+```
+
+Build standalone app:
+
+```bash
+npm run build
+```
+
+Build Microfrontend bundle:
+
+```bash
+npm run build:mfe
+```
+
+---
+
+## Build Outputs
+
+Standalone app:
 
 ```text
-https://YOUR-DEPLOYMENT.vercel.app/
+dist/
 ```
 
 Microfrontend bundle:
 
 ```text
-https://YOUR-DEPLOYMENT.vercel.app/mfe/yum-cart-checkout.js
+dist/mfe/yum-cart-checkout.js
 ```
 
-Replace these placeholders only after deployment has actually been verified.
-
----
-
-## 🗂 Suggested project structure
+Production bundle URL:
 
 ```text
-src/
-├── assets/
-├── components/
-├── contracts/
-├── events/
-├── fixtures/
-├── order/
-├── payment/
-├── state/
-├── storage/
-├── styles/
-├── utils/
-├── validation/
-├── yum-cart-checkout.ts
-├── mfe.ts
-└── main.ts
-
-docs/
-├── contracts.md
-└── integration.md
+https://yum-ta-dum-cart.vercel.app/mfe/yum-cart-checkout.js
 ```
 
 ---
 
-## 📚 Documentation
+## Testing Checklist
 
-- [`docs/contracts.md`](docs/contracts.md) — exact shared TypeScript and event contracts
-- [`docs/integration.md`](docs/integration.md) — Shell loading and event-integration examples
+| Test | Status |
+|---|---|
+| Standalone app runs | ✅ |
+| Production build passes | ✅ |
+| MFE bundle builds | ✅ |
+| Shell can load `<yum-cart-checkout>` | ✅ |
+| Receives `cart:add-item` | ✅ |
+| Emits `cart:updated` | ✅ |
+| Emits `order:completed` | ✅ |
+| Emits `navigation:requested` | ✅ |
+| Cart persists after refresh | ✅ |
+| Restaurant conflict handled safely | ✅ |
+| Checkout flow works | ✅ |
+| Responsive layout tested | ✅ |
+| Integrated Shell demo tested | ✅ |
 
 ---
 
-## ⚠️ Known limitations
+## Integration Challenge Solved
 
-This is intentionally a university frontend simulation.
+During integration, the cart needed to work correctly even when it was mounted but hidden by the Shell router.
 
-Not included:
+One important case was the **restaurant conflict rule**. When a user adds an item from a different restaurant while browsing Catalog, the Cart receives the event even if the Cart page is not currently visible.
 
-- backend/API
-- real database
-- real authentication
+The fix ensures that the Cart requests navigation to `/cart` before showing the restaurant-conflict confirmation dialog. This prevents the user from getting stuck on the Catalog page and keeps the rule visible and understandable.
+
+---
+
+## Accessibility Notes
+
+The Cart & Checkout Microfrontend includes:
+
+- visible form labels
+- keyboard-accessible actions
+- responsive layout
+- meaningful empty and success states
+- accessible checkout steps
+- clear validation messages
+- touch-friendly controls
+- reduced dependency on color-only feedback
+
+---
+
+## Known Limitations
+
+This is a frontend-only course project. Version 1 does not include:
+
+- backend API
+- production database
 - real payment gateway
-- real wallet
-- geocoding/maps
-- live courier tracking
-- inventory reservation
-- production fraud/security systems
+- real authentication
+- real wallet balance
+- real delivery provider
+- real-time courier tracking
+- production security or fraud checks
 
-Account & Orders owns durable order history. This component keeps only the current successful confirmation in memory.
-
----
-
-## 🧭 Repository boundaries
-
-Do not add the global Yum Ta Dum header, footer, navigation, or duplicated brand logo here.
-
-Do not import another member's implementation source.
-
-Public routes, element names, data contracts, event names, and event payloads are team-level integration contracts and should only change through coordinated agreement.
+All payment and order behavior is simulated for demonstration purposes.
 
 ---
 
-<div align="center">
+## AI Usage
 
-### Group 13 · Yum Ta Dum
+AI tools were used as development support for:
 
-**Cart & Checkout — Nour Al-Huda**
+- reviewing integration contracts
+- debugging Web Component integration
+- improving event flow reliability
+- organizing README documentation
+- checking project submission readiness
 
-Built as an independently deployable Lit Web Component for Component-Based Software Engineering.
+The implementation was reviewed, tested, and approved by the team.
 
-🍔 → 🛒 → 📍 → 💳 → ✅
+---
+
+## Final Demo Flow
+
+The expected integrated demo flow is:
+
+```text
+1. Open the Yum Ta Dum Shell
+2. Browse restaurants in Catalog
+3. Add a meal to cart
+4. Shell cart badge updates
+5. Open Cart
+6. Complete checkout
+7. Place mock order
+8. Account & Orders receives the completed order
+9. Order appears in order history
+```
+
+---
+
+## Author
+
+**Nour Al-Huda**  
+Cart & Checkout Microfrontend Owner  
+Group 13 — CBSE Microfrontend E-commerce Project
+
+---
+
+## Yum Ta Dum
 
 **Good food. Good mood. Yum Ta Dum.**
-
-</div>
