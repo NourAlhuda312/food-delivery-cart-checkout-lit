@@ -3,7 +3,15 @@
 **Group 13 · Component-Based Software Engineering**
 
 **Good food. Good mood. Yum Ta Dum.**
+        <p align="center">
+  <b> Click the image to view the project Video</b></p>
+<p align="center">
 
+  <a href="https://www.canva.com/design/DAHSem8WYUU/Pw2q_iZgFpJVeMlXjmn7WA/watch">
+    <img src="./public/presentation.png" alt="Project Presentation" width="580">
+  </a>
+
+</p>
 This repository contains the **Cart & Checkout Microfrontend** for the Yum Ta Dum multi-vendor food delivery platform.
 
 It is built as an independently deployable **Lit + Material Web** Web Component and integrated into the final Yum Ta Dum Shell through **Web Components + DOM Custom Events**.
