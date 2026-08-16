@@ -151,10 +151,15 @@ export class YumCartCheckout extends LitElement {
     const detail = readCartAddItemEvent(event);
     if (!detail || !isMealItem(detail.item)) return;
     const incoming = { ...detail.item };
-    if (hasRestaurantConflict(this.items, incoming)) {
-      this.pendingConflictItem = incoming;
-      return;
-    }
+ if (hasRestaurantConflict(this.items, incoming)) {
+  this.requestNavigation('/cart');
+
+  this.updateComplete.then(() => {
+    this.pendingConflictItem = incoming;
+  });
+
+  return;
+}
     const result = addOrIncrement(this.items, incoming);
     this.applyCart(result.items);
     if (result.capped) this.showSnackbar("You've reached the maximum quantity (10).");
